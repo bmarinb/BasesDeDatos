@@ -5,3 +5,9 @@ Para crear un cliente?
 sudo mongod
 Para abrir consola de mongo
 sudo mongo 
+
+
+en Mac:
+
+If you have installed mongodb through homebrew then you can simply start mongodb through
+brew services start mongodb
