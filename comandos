@@ -1,0 +1,7 @@
+Para levantar el servidor
+sudo service mongod start
+
+Para crear un cliente?
+sudo mongod
+Para abrir consola de mongo
+sudo mongo 
