@@ -21,3 +21,11 @@ brew services stop mongodb
 For more options
 
 brew info mongodb
+
+
+importar bases de datos
+
+# asumiendo q estas en el directorio de instalacion de mongo
+mongoimport --db test --collection nombre_base --drop --file archivo.json --jsonArray
+
+
