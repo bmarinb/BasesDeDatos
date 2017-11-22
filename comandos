@@ -10,4 +10,14 @@ sudo mongo
 en Mac:
 
 If you have installed mongodb through homebrew then you can simply start mongodb through
+
 brew services start mongodb
+Then access the shell by
+
+mongo
+You can shut down your db by
+
+brew services stop mongodb
+For more options
+
+brew info mongodb
