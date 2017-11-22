@@ -2,18 +2,18 @@ from flask import Flask, jsonify
 from pymongo import MongoClient
 import json
 with open('users.json') as file:
-	tabla_usuarios= json.load(file)
+	users_json= json.load(file)
+with open('messages.json')as file:
+	msgs_json = json.load(file)
 app = Flask(__name__)
 
 
 client = MongoClient() #localhost 27017
-db = client.caca #mi base de datos se llama test
+db = client.grupo11 #mi base de datos se llama test
 users = db.users #dentro de test, una coleccion es users
-#users.insert_many(tabla_usuarios)
-tweets = db.tweets #dentro de test, otra coleccion es tweets
-
-
-
+#users.insert_many(users_json)
+msgs = db.msgs #dentro de test, otra coleccion es tweets
+msgs.insert_many(msgs_json)
 @app.route("/")
 def hello():
     return "Hello World!"
@@ -24,19 +24,17 @@ def hello():
 def find_users(id=None):	
 	results = users.find({"id":int(id)},{"_id":0})
 
-										# esta id que genera mongo no es serializable por python, por lo que pongo _id: 0 para que no lo muestre
-					# nombre que se muestra
+
 	return jsonify("users", [user for user in results])
 
 
 
-@app.route("/tweets/<mid>")
-def find_tweets(mid=None):
-	pass
+@app.route("/msgs/<mid>")
+def find_msgs(mid=None):
+	results = msgs.find({"id":int(mid)},{"_id":0})
 
-@app.route("/msg")
-def find_tweets_by_user():
-	pass
+	return jsonify("msgs", [msg for msg in results])	
+
 
 
 
