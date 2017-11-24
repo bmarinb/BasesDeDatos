@@ -44,7 +44,7 @@ def find_msgs(mid=None):
 
 @app.route("/tweets/<mid>/<uid>")
 def find_tweets_by_user(mid=None, uid=None):
-    results = msgs.find({"sender": int(mid), "receptant": int(uid)})
+    results = msgs.find({"sender": int(mid), "receptant": int(uid)}, {"_id": 0})
     print(mid)
     print(uid)
     print([user for user in results])
