@@ -51,5 +51,29 @@ def find_tweets_by_user(mid=None, uid=None):
     return jsonify(msgs=tuits)
 
 
+@app.route("/tweets/<mid>/<uid>/<date>/<lat>/<lon>")
+def filter_date_loc(date=None, lat=None, lon=None, mid=None, uid=None):
+    if date == "any" and lat != "any" and lon != "any":
+        tuits = msgs.find({"sender": int(mid), "receptant": int(uid), "lat": float(lat), "long": float(lon)}, {"_id": 0})
+    elif date != "any" and (lat == "any" or lon == "any"):
+        tuits = msgs.find({"sender": int(mid), "receptant": int(uid), "date": date}, {"_id": 0})
+    elif date != "any" and lon != "any" and lat != "any":
+        tuits = msgs.find({"sender": int(mid), "receptant": int(uid), "lat":float(lat), "long": float(lon), "long": lon},
+                          {"_id": 0})
+    else:
+        tuits = msgs.find({"sender": int(mid), "receptant": int(uid)}, {"_id": 0})
+    tuits = [msg for msg in tuits]
+    return jsonify(msgs=tuits)
+
+@app.route("/tweets/<mid>/<uid>/<date>")
+def filter_date(date=None, mid=None, uid=None):
+    if date != "any":
+        tuits = msgs.find({"sender": int(mid), "receptant": int(uid), "date": date}, {"_id": 0})
+    else:
+        tuits = msgs.find({"sender": int(mid), "receptant": int(uid)}, {"_id": 0})
+    tuits = [msg for msg in tuits]
+    return jsonify(msgs=tuits)
+
+
 if __name__ == '__main__':
     app.run(port=2000)
