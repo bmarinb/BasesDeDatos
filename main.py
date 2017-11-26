@@ -17,10 +17,10 @@ app = Flask(__name__)
 client = MongoClient()  # localhost 27017
 db = client.grupo11  # mi base de datos se llama test
 users = db.users  # dentro de test, una coleccion es users
-# users.insert_many(users_json)
+users.insert_many(users_json)
 msgs = db.msgs  # dentro de test, otra coleccion es tweets
 
-# msgs.insert_many(msgs_json)
+msgs.insert_many(msgs_json)
 
 
 @app.route("/")
@@ -77,20 +77,37 @@ def find_tweets_by_user(mid=None, uid=None):
     return jsonify(msgs=tuits)
 
 
-@app.route("/tweets/<mid>/<uid>/<date>/<lat>/<lon>")
-def filter_date_loc(date=None, lat=None, lon=None, mid=None, uid=None):
-    if date == "any" and lat != "any" and lon != "any":
-        tuits = msgs.find({"sender": int(mid), "receptant": int(uid), "lat": float(lat), "long": float(lon)}, {"_id": 0})
-    elif date != "any" and (lat == "any" or lon == "any"):
-        tuits = msgs.find({"sender": int(mid), "receptant": int(uid), "date": date}, {"_id": 0})
-    elif date != "any" and lon != "any" and lat != "any":
-        tuits = msgs.find({"sender": int(mid), "receptant": int(uid), "lat":float(lat), "long": float(lon), "long": lon},
-                          {"_id": 0})
+@app.route("/tweets/<mid>/<uid>/search", methods=['GET'])
+def filter_tweets_by_user(mid=None, uid=None):
+    
+    base = request.args.get('idate', None)
+    top = request.args.get('fdate', None)
+    lat = request.args.get('lat', None)
+    lon =  request.args.get('long', None)
+
+    list = [base,top,lat,lon]
+
+    if all([i != None for i in list]):
+        #http://localhost:2000/tweets/1/16/search?idate=2015-08-28&fdate=2015-08-28&lat=-33.05&long=-71.616667
+
+        tuits = msgs.find({"sender": int(mid), "receptant": int(uid), "lat": float(lat),
+         "long": float(lon),"date": {'$lt': top, '$gte': base}}, {"_id": 0})
+
+    elif top != None and base != None and (lat == None or lon == None):
+        tuits = msgs.find({"sender": int(mid), "receptant": int(uid), "date": {'$lt': top, '$gte': base}}, {"_id": 0})
+
+    elif lat != None and lon != None and (base == None or top == None):
+        tuits = msgs.find({"sender": int(mid), "receptant": int(uid),  "lat": float(lat),
+         "long": float(lon)}, {"_id": 0})
+
     else:
+        
         tuits = msgs.find({"sender": int(mid), "receptant": int(uid)}, {"_id": 0})
+
     tuits = [msg for msg in tuits]
     return jsonify(msgs=tuits)
 
+"""
 @app.route("/tweets/<mid>/<uid>/<date>")
 def filter_date(date=None, mid=None, uid=None):
     if date != "any":
@@ -100,6 +117,7 @@ def filter_date(date=None, mid=None, uid=None):
     tuits = [msg for msg in tuits]
     return jsonify(msgs=tuits)
 
+"""
 
 if __name__ == '__main__':
     app.run(port=2000)
